@@ -1,5 +1,6 @@
 import streamlit as st
 import smtplib
+import ssl
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from PIL import Image
@@ -223,12 +224,15 @@ Amount per Person: ₹{amount_each:.2f}
        
         # Connect to Gmail
         message.attach(MIMEText(message_text,"plain"))
-        with smtplib.SMTP_SSL("smtp.gmail.com",465,timeout=30)as server:
+        context=ssl.create_default_context()
+        with smtplib.SMTP_SSL("smtp.gmail.com",465,context=context, timeout=30)as server:
+           
             server.login(sender_email,sender_password)
             server.send_message(message)
         st.success("Bill summary sent successfuly to your email!")
     except Exception as e:
                 st.error(f"Unable to send email:{e}")
+                print("EMAIL ERROR:",repr(e))
      
 
 
