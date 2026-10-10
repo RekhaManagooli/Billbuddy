@@ -1,97 +1,114 @@
-# 🧾 BillBuddy – Bill Tracker & Splitter
+ BillBuddy – AI-Powered Bill Tracker & Splitter
 
-##  Project Overview
+* Project Overview
 
-BillBuddy is a web-based bill tracking and splitting application developed using Python and Streamlit.
+BillBuddy is an AI-powered web application that helps users easily understand and split their bills. Users enter their name and email, upload a bill image, and BillBuddy uses Google Gemini AI to extract the bill details such as items, quantity, price, GST, subtotal, and total amount.
 
-The application allows users to upload a bill image, automatically read the bill details using AI, display the extracted information, and split the total bill among multiple people.
-
-It supports both:
-
-- Equal bill splitting
-- Custom bill splitting
-
-BillBuddy is designed to make bill sharing faster, easier, and more convenient.
+The user can then choose between equal splitting or custom splitting. After the split is calculated, the complete bill summary can be sent to the user's email.
 
 ---
 
-##  Objectives
 
-The main objectives of BillBuddy are:
+* Objectives
 
-- To extract bill information automatically from an uploaded image.
-- To reduce manual entry of bill details.
-- To display items, quantity, price, GST, subtotal, and total amount.
-- To calculate the amount each person should pay.
-- To support equal and custom bill splitting.
-- To provide an option to send the bill split information through WhatsApp using Twilio.
+- To automatically extract bill information from an image using AI.
+- To reduce manual calculation of bills.
+- To provide easy equal and custom bill splitting.
+- To send the final bill and split summary to the user's email.
+- To provide a simple and user-friendly bill management system.
 
 ---
 
-##  How BillBuddy Works
 
-The application works in the following steps:
+* System Workflow
 
-### 1. Upload Bill
-
-The user uploads a bill image in JPG, JPEG, or PNG format.
-
-### 2. AI Bill Recognition
-
-The uploaded image is processed using Google's Gemini AI model.
-
-The AI reads the bill and extracts information such as:
-
-- Item name
-- Quantity
-- Price
-- GST
-- Subtotal
-- Total bill amount
-
-### 3. Display Bill Details
-
-The extracted information is displayed in a table so that the user can easily check the bill details.
-
-### 4. Select Split Method
-
-The user can choose between:
-
-**Equal Split**
-
-The total bill is divided equally among the selected number of people.
-
-**Custom Split**
-
-The user can enter a different amount for each person.
-
-The application checks whether the entered custom amounts match the total bill.
-
-### 5. WhatsApp
-
-BillBuddy also includes Twilio WhatsApp integration.
-
-The application can send the bill information through WhatsApp using the configured Twilio service.
+User enters Name & Email
+          ↓
+    Upload Bill Image
+          ↓
+   Google Gemini AI
+          ↓
+   Extract Bill Details
+          ↓
+ Display Items, Quantity,
+ Price, GST & Total
+          ↓
+   Choose Split Method
+          ↓
+ Equal Split / Custom Split
+          ↓
+ Calculate Amount to Pay
+          ↓
+ Send Bill Summary to Email
 
 ---
 
-##  System Workflow
 
-```text
-User
-  ↓
-Upload Bill Image
-  ↓
-Streamlit Application
-  ↓
-Gemini AI
-  ↓
-Extract Bill Information
-  ↓
-Display Bill Details
-  ↓
-Choose Split Method
-  ↓
-Equal Split / Custom Split
-  ↓
-WhatsApp Integration using Twilio
+* How BillBuddy Works
+
+1. The user enters their name and email ID.
+2. The user uploads a bill image.
+3. Google Gemini AI analyzes the image and extracts the bill information.
+4. BillBuddy displays the extracted items, quantity, price, GST, subtotal, and total.
+5. The user selects Equal Split or Custom Split.
+6. BillBuddy calculates how much each person should pay.
+7. The final bill and split details are sent to the user's email ID.
+
+---
+
+
+
+* Project Information
+
+Component| Technology
+Frontend| Streamlit
+Backend| Python
+AI / Bill Recognition| Google Gemini Vision AI
+Image Processing| Pillow (PIL)
+Data Format| JSON
+Email Service| SMTP / Gmail
+Version Control| Git & GitHub
+Deployment| Streamlit Community Cloud
+
+---
+
+
+* Main Files
+
+BillBuddy/
+│
+├── streamlit_app.py    # Main application
+├── prompts.py          # Gemini bill-reading prompt
+├── requirements.txt    # Required Python libraries
+├── README.md           # Project documentation
+└── .streamlit/
+    └── secrets.toml    # API keys and email credentials
+
+---
+
+
+* Key Features
+
+-  AI-based bill recognition
+-  Bill image upload
+-  Automatic bill detail extraction
+-  Equal bill splitting
+-  Custom bill splitting
+-  Email bill summary
+-  Cloud deployment
+
+---
+
+
+* Future Scope
+
+BillBuddy can be extended with bill history, expense tracking, item-wise splitting, spending analytics, PDF reports, mobile application support, and online payment integration.
+
+---
+
+
+* Project
+
+Project Name: BillBuddy
+Domain: Artificial Intelligence & Expense Management
+Application Type: AI-Powered Web Application

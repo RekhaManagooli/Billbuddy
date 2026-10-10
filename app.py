@@ -1,22 +1,30 @@
 import streamlit as st
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 from PIL import Image
 from google import genai
-from twilio.rest import Client
 import json
 from prompts import BILL_READING_PROMPT
 
 st.set_page_config(page_title="BillBuddy", page_icon="🧾")
 
-st.title("🧾 BillBuddy")
+st.title(" BillBuddy")
+st.subheader("Welcome to BillBuddy!")
+
+user_name = st.text_input("Enter your name")
+user_email = st.text_input("Enter your email ID")
+
+if user_name:
+    st.success(
+        f"Hi {user_name}!  Upload your bill image to get the details and split your bill easily."
+    )
+
 st.subheader("Bill Tracker & Splitter")
 
 # Gemini connection
 client = genai.Client(
     api_key=st.secrets["GEMINI_API_KEY"]
-)
-twilio_client=Client(
-    st.secrets["TWILIO_ACCOUNT_SID"],
-    st.secrets["TWILIO_AUTH_TOKEN"]
 )
 
 # Upload bill
@@ -35,17 +43,11 @@ if uploaded_file is not None:
         width="stretch"
     )
 
-    if st.button("🔍 Read Bill"):
+    if st.button(" Read Bill"):
 
         with st.spinner("Reading your bill..."):
 
             prompt = BILL_READING_PROMPT
-
-
-
-
-
-
 
             try:
 
@@ -65,12 +67,11 @@ if uploaded_file is not None:
 
                 st.session_state["bill_data"] = bill_data
 
-                st.success("Bill read successfully! ✅")
+                st.success("Bill read successfully! ")
 
             except Exception as e:
 
                 st.error("Unable to read the bill.")
-
                 st.code(str(e))
 
 
@@ -79,7 +80,7 @@ if "bill_data" in st.session_state:
 
     bill_data = st.session_state["bill_data"]
 
-    st.subheader("📋 Bill Details")
+    st.subheader(" Bill Details")
 
     items = bill_data.get("items", [])
 
@@ -99,17 +100,16 @@ if "bill_data" in st.session_state:
     st.table(table_data)
 
     # Total
-  
     total_bill = float(bill_data.get("total", 0))
 
     st.success(
-        f"💰 Total Bill: ₹{total_bill:.2f}"
+        f" Total Bill: ₹{total_bill:.2f}"
     )
 
     st.divider()
 
     # Bill splitting
-    st.subheader("➗ Split Your Bill")
+    st.subheader(" Split Your Bill")
 
     split_method = st.radio(
         "Choose splitting method:",
@@ -130,7 +130,7 @@ if "bill_data" in st.session_state:
         amount_each = total_bill / people
 
         st.success(
-            f"👥 Each person pays: ₹{amount_each:.2f}"
+            f" Each person pays: ₹{amount_each:.2f}"
         )
 
     # Custom split
@@ -170,7 +170,7 @@ if "bill_data" in st.session_state:
         if abs(difference) < 0.01:
 
             st.success(
-                "✅ Custom split is correct!"
+                " Custom split is correct!"
             )
 
         elif difference > 0:
@@ -184,46 +184,65 @@ if "bill_data" in st.session_state:
             st.error(
                 f"₹{abs(difference):.2f} is more than the bill total."
             )
+            st.divider()
+st.subheader(" Send Bill to Your Email")
 
-st.divider()
-
-st.subheader("📱 Send Bill Split to WhatsApp")
-
-if st.button("📲 Send to WhatsApp"):
+if st.button(" Send Bill to My Email"):
 
     try:
-        total_bill = float(bill_data.get("total", 0))
+        sender_email = st.secrets["GMAIL_ADDRESS"]
+        sender_password = st.secrets["GMAIL_APP_PASSWORD"]
+
+        message = MIMEMultipart()
+        message["From"] = sender_email
+        message["To"] = user_email
+        message["Subject"] = "BillBuddy - Bill Summary"
 
         message_text = f"""
-🧾 BillBuddy Bill Summary
+Hello {user_name},
 
-💰 Total Bill: ₹{total_bill:.2f}
+Here is your BillBuddy bill summary.
 
-➗ Split Method: {split_method}
+Total Bill: ₹{total_bill:.2f}
+
+Split Method: {split_method}
 """
 
         if split_method == "Equal Split":
             message_text += f"""
-👥 Number of People: {int(people)}
-💵 Amount per Person: ₹{amount_each:.2f}
+Number of People: {int(people)}
+Amount per Person: ₹{amount_each:.2f}
 """
 
         else:
-            message_text += "\n👥 Custom Split:\n"
+            message_text += "\nCustom Split:\n"
 
             for i, amount in enumerate(custom_amounts):
                 message_text += f"Person {i + 1}: ₹{amount:.2f}\n"
 
-        message = twilio_client.messages.create(
-            from_=st.secrets["TWILIO_WHATSAPP_NUMBER"],
-            to=st.secrets["TWILIO_TO_NUMBER"],
-            content_sid=st.secrets["TWILIO_CONTENT_SID"]
-        )
-
-        st.success("✅ Bill split sent to WhatsApp!")
-        st.write("Message SID: ",message.sid)
-        st.write("Initial status: ",message.status)
-
+       
+        # Connect to Gmail
+        message.attach(MIMEText(message_text,"plain"))
+        with smtplib.SMTP_SSL("smtp.gmail.com",465,timeout=30)as server:
+            server.login(sender_email,sender_password)
+            server.send_message(message)
+        st.success("Bill summary sent successfuly to your email!")
     except Exception as e:
-        st.error("❌ Unable to send WhatsApp message.")
-        st.code(str(e))
+                st.error(f"Unable to send email:{e}")
+     
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
